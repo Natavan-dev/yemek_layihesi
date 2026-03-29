@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Natevanın Restoranı - Premium</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #d4af37;
+            --primary: #e67e22;
+            --secondary: #d35400;
+            --dark: #1a1a1a;
+        }
+
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), 
+                        url('https://images.pexels.com/photos/941861/pexels-photo-941861.jpeg?auto=compress&cs=tinysrgb&w=1600');
+            background-size: cover; background-position: center; background-attachment: fixed;
+            display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; 
+        }
+
+        .container { 
+            background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(15px);
+            padding: 0; border-radius: 40px; border: 1px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 0 40px 80px rgba(0,0,0,0.6); width: 1000px; 
+            max-height: 90vh; overflow-y: auto; position: relative;
+        }
+
+        /* Login Ekranı Yeniləndi */
+        .auth-wrapper { display: flex; min-height: 550px; }
+        .auth-side-img { 
+            flex: 1; 
+            background: url('https://images.pexels.com/photos/262978/pexels-photo-262978.jpeg?auto=compress&cs=tinysrgb&w=800');
+            background-size: cover; background-position: center;
+        }
+        .auth-content { flex: 1; padding: 60px; text-align: left; display: flex; flex-direction: column; justify-content: center; }
+
+        .restaurant-title {
+            font-family: 'Playfair Display', serif;
+            color: var(--dark); font-size: 2.5em; margin-bottom: 10px; border-left: 5px solid var(--gold); padding-left: 15px;
+        }
+
+        /* Menyu Elementləri */
+        .menu-header { padding: 40px 40px 10px 40px; text-align: center; }
+        .tabs { display: flex; justify-content: center; gap: 15px; margin: 20px 0; }
+        .tab-btn { 
+            padding: 12px 45px; border: 1.5px solid #eee; border-radius: 50px; cursor: pointer; 
+            background: white; color: #555; font-weight: 600; transition: 0.3s;
+        }
+        .tab-btn.active { 
+            background: var(--dark); color: white; border-color: var(--dark);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        input { 
+            width: 100%; padding: 16px; margin-bottom: 15px; border: 1px solid #ddd; 
+            border-radius: 12px; outline: none; font-size: 1em; background: #fafafa;
+        }
+        .btn-gold { 
+            background: var(--dark); color: white; width: 100%; padding: 16px; border: none; 
+            border-radius: 12px; cursor: pointer; font-weight: 600; transition: 0.3s;
+        }
+        .btn-gold:hover { background: var(--secondary); transform: translateY(-2px); }
+
+        /* Məhsul Kartları */
+        .menu-grid { display: none; grid-template-columns: repeat(3, 1fr); gap: 25px; padding: 30px; }
+        .menu-grid.active { display: grid; }
+
+        .item-card { 
+            background: #fff; border-radius: 25px; border: 1px solid #f0f0f0; 
+            transition: 0.4s; overflow: hidden; text-align: center; padding-bottom: 20px;
+        }
+        .item-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+
+        .item-img { width: 100%; height: 180px; object-fit: cover; }
+        .item-name { font-weight: 600; font-size: 1.1em; margin: 15px 0 5px; display: block; }
+        .item-price { color: #27ae60; font-weight: 700; margin-bottom: 15px; display: block; }
+
+        .btn-order { 
+            background: none; border: 2px solid var(--primary); color: var(--primary);
+            padding: 8px 25px; border-radius: 50px; cursor: pointer; font-weight: 600; transition: 0.3s;
+        }
+        .btn-order:hover { background: var(--primary); color: white; }
+
+        .hidden { display: none; }
+        .logout { margin: 20px; display: inline-block; color: #999; text-decoration: none; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+
+    <div id="auth-section" class="container">
+        <div class="auth-wrapper">
+            <div class="auth-side-img"></div>
+            <div class="auth-content">
+                <h1 class="restaurant-title">Natevanın<br>Restoranı</h1>
+                <p style="color: #666; margin-bottom: 30px;">Premium dadlar dünyasına xoş gəldiniz.</p>
+                <input type="text" id="username" placeholder="İstifadəçi adı">
+                <input type="password" id="password" placeholder="Şifrə">
+                <button class="btn-gold" onclick="handleAuth('login')">Daxil Ol</button>
+                <button style="background:none; border:none; color:var(--primary); cursor:pointer; margin-top:15px; font-weight:600;" onclick="handleAuth('register')">Qeydiyyatdan keç</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="menu-section" class="container hidden">
+        <div class="menu-header">
+            <h1 class="restaurant-title" style="display:inline-block; border:none;">Bizim Menyu</h1>
+            <div class="tabs">
+                <button class="tab-btn active" onclick="showCategory('foods', this)">Yeməklər</button>
+                <button class="tab-btn" onclick="showCategory('drinks', this)">İçkilər</button>
+            </div>
+        </div>
+
+        <div id="foods" class="menu-grid active">
+            <div class="item-card">
+                <img src="https://images.pexels.com/photos/1146760/pexels-photo-1146760.jpeg?auto=compress&cs=tinysrgb&w=400" class="item-img">
+                <span class="item-name">Məxsusi Pizza</span><span class="item-price">12.00 AZN</span>
+                <button class="btn-order" onclick="makeOrder('Pizza')">Sifariş</button>
+            </div>
+            <div class="item-card">
+                <img src="https://images.pexels.com/photos/1639557/pexels-photo-1639557.jpeg?auto=compress&cs=tinysrgb&w=400" class="item-img">
+                <span class="item-name">Classic Burger</span><span class="item-price">8.50 AZN</span>
+                <button class="btn-order" onclick="makeOrder('Burger')">Sifariş</button>
+            </div>
+            <div class="item-card">
+                <img src="https://images.pexels.com/photos/2098085/pexels-photo-2098085.jpeg?auto=compress&cs=tinysrgb&w=400" class="item-img">
+                <span class="item-name">Sushi Set</span><span class="item-price">25.00 AZN</span>
+                <button class="btn-order" onclick="makeOrder('Sushi')">Sifariş</button>
+            </div>
+            <div class="item-card">
+                <img src="https://images.pexels.com/photos/1211887/pexels-photo-1211887.jpeg?auto=compress&cs=tinysrgb&w=400" class="item-img">
+                <span class="item-name">Təzə Salat</span><span class="item-price">10.00 AZN</span>
+                <button class="btn-order" onclick="makeOrder('Salat')">Sifariş</button>
+            </div>
+            <div class="item-card">
+                <img src="https://images.pexels.com/photos/461198/pexels-photo-461198.jpeg?auto=compress&cs=tinysrgb&w=400" class="item-img">
+                <span class="item-name">Dönər Portsiya</span><span class="item-price">7.00 AZN</span>
+                <button class="btn-order" onclick="makeOrder('Doner')">Sifariş</button>
+            </div>
+            <div class="item-card">
+                <img src="https://images.pexels.com/photos/14731635/pexels-photo-14731635.jpeg?auto=compress&cs=tinysrgb&w=400" class="item-img">
+                <span class="item-name">Pendirli Pide</span><span class="item-price">6.50 AZN</span>
+                <button class="btn-order" onclick="makeOrder('Pide')">Sifariş</button>
+            </div>
+        </div>
+
+        <div id="drinks" class="menu-grid">
+            <div class="item-card">
+                <img src="https://images.pexels.com/photos/2983101/pexels-photo-2983101.jpeg?auto=compress&cs=tinysrgb&w=400" class="item-img">
+                <span class="item-name">Koka-Kola</span><span class="item-price">2.00 AZN</span>
+                <button class="btn-order" onclick="makeOrder('Kola')">Sifariş</button>
+            </div>
+            <div class="item-card">
+                <img src="https://images.pexels.com/photos/1337825/pexels-photo-1337825.jpeg?auto=compress&cs=tinysrgb&w=400" class="item-img">
+                <span class="item-name">Portağal Şirəsi</span><span class="item-price">4.50 AZN</span>
+                <button class="btn-order" onclick="makeOrder('Sire')">Sifariş</button>
+            </div>
+            <div class="item-card">
+                <img src="https://images.pexels.com/photos/312418/pexels-photo-312418.jpeg?auto=compress&cs=tinysrgb&w=400" class="item-img">
+                <span class="item-name">Cappuccino</span><span class="item-price">5.00 AZN</span>
+                <button class="btn-order" onclick="makeOrder('Kofe')">Sifariş</button>
+            </div>
+            <div class="item-card">
+                <img src="https://images.pexels.com/photos/2109099/pexels-photo-2109099.jpeg?auto=compress&cs=tinysrgb&w=400" class="item-img">
+                <span class="item-name">Limonad</span><span class="item-price">3.50 AZN</span>
+                <button class="btn-order" onclick="makeOrder('Limonad')">Sifariş</button>
+            </div>
+            <div class="item-card">
+                <img src="https://images.pexels.com/photos/4000090/pexels-photo-4000090.jpeg?auto=compress&cs=tinysrgb&w=400" class="item-img">
+                <span class="item-name">Mineral Su</span><span class="item-price">1.00 AZN</span>
+                <button class="btn-order" onclick="makeOrder('Su')">Sifariş</button>
+            </div>
+            <div class="item-card">
+                <img src="https://images.pexels.com/photos/1414122/pexels-photo-1414122.jpeg?auto=compress&cs=tinysrgb&w=400" class="item-img">
+                <span class="item-name">Soyuq Çay</span><span class="item-price">2.50 AZN</span>
+                <button class="btn-order" onclick="makeOrder('Ice Tea')">Sifariş</button>
+            </div>
+        </div>
+
+        <div style="text-align: center;">
+            <a href="#" class="logout" onclick="location.reload()">Sistemdən çıxış</a>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "http://localhost:3000";
+
+        function showCategory(categoryId, btn) {
+            document.querySelectorAll('.menu-grid').forEach(grid => grid.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+            document.getElementById(categoryId).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        async function handleAuth(type) {
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+            if(!user || !pass) return alert("Xanaları doldurun!");
+            try {
+                const response = await fetch(`${API_URL}/${type}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: user, password: pass })
+                });
+                if (response.ok) {
+                    if(type === 'login') {
+                        document.getElementById('auth-section').classList.add('hidden');
+                        document.getElementById('menu-section').classList.remove('hidden');
+                    } else alert("Qeydiyyat uğurludur!");
+                } else alert("Məlumatlar yanlışdır.");
+            } catch (e) { alert("Server xətası."); }
+        }
+
+        async function makeOrder(food) {
+            const user = document.getElementById('username').value;
+            try {
+                const response = await fetch(`${API_URL}/order`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: user, food_name: food })
+                });
+                if (response.ok) alert(`✅ ${food} sifariş edildi!`);
+            } catch (e) { alert("Sifariş xətası."); }
+        }
+    </script>
+</body>
+</html>
