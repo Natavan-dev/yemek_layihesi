@@ -41,10 +41,14 @@ app.post('/login', async (req, res) => {
         // Əvvəlcə istifadəçini adına görə tapırıq
         const userResult = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
         
+        //tehlukeli variant
+        //const query = `SELECT * FROM users WHERE username = '${username}'`; 
+        //const userResult = await pool.query(query);
         if (userResult.rows.length > 0) {
             const user = userResult.rows[0];
             
             // BURADA DAXİL EDİLƏN ŞİFRƏ İLƏ BAZADAKI HASH-İ MÜQAYİSƏ EDİRİK
+            // sql injectionda şərhə alacağımız hissə
             const isMatch = await bcrypt.compare(password, user.password);
             
             if (isMatch) {
@@ -52,6 +56,7 @@ app.post('/login', async (req, res) => {
             } else {
                 res.status(401).json({ error: "Şifrə yanlışdır!" });
             }
+           res.status(200).json({ message: "Giriş edildi (SQL Injection uğurlu!)", user: user });
         } else {
             res.status(404).json({ error: "İstifadəçi tapılmadı." });
         }
